@@ -1,0 +1,25 @@
+REFRAME — Proprietary License
+Copyright © 2026 Sergio (Maestro). All rights reserved.
+
+This software, its source code, its design and its visual identity
+(including the "Designed by Sergio" mark) are the exclusive property
+of the author.
+
+PERMITTED without further permission:
+  • Viewing and studying the source code published in this repository.
+  • Installing and using the compiled plugin (.ccx) for your own work.
+
+NOT PERMITTED without prior written permission from the author:
+  • Copying, modifying or redistributing the source code or any part of it.
+  • Publishing derivative plugins or panels based on this code or design.
+  • Selling, sublicensing or otherwise commercially distributing this
+    software.
+  • Removing or altering the copyright or authorship notices.
+
+For permissions, contact the author via GitHub: https://github.com/TheMaestr-o
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY ARISING FROM THE
+USE OF THE SOFTWARE.

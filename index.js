@@ -1,6 +1,8 @@
 /* ==========================================================================
    REFRAME v2.2.6  (UXP Panel)
-   AUTHOR: MAESTRO | © 2026
+   AUTHOR: Sergio (Maestro)
+   © 2026 Sergio (Maestro). All rights reserved. See LICENSE.
+   No copying, redistribution or derivative works without written permission.
    --------------------------------------------------------------------------
    Repositions the canvas around "Path 1" — non-destructively.
    Canvas size always stays exactly W × H.

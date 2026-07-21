@@ -32,3 +32,7 @@ and restart Photoshop. It loads automatically at every start.
 - **Presets:** 3 slots, empty by default. Right-click the value (or drag it onto a slot) → save; click a saved preset → load; right-click it → move / delete; drag between slots → reorder.
 - **Apply** (or Enter) — run it. Arrow keys pick the side, C = Center, Tab jumps into the margin field, Enter there moves focus to APPLY.
 - Canvas size never changes, pixels outside the canvas are kept (crop with `delete: false`), all in one History step.
+
+---
+
+© 2026 Sergio (Maestro). All rights reserved. See [LICENSE](LICENSE).
