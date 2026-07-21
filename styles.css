@@ -8,6 +8,9 @@
    - NO stretched inputs: UXP does not vertically center input text inside
      a tall box. The field gets a natural height and sits in a flex row.
    - NO `gap`: spacing is done with margins.
+   - NO native <button> for custom-sized controls: UXP's built-in button
+     layout truncates/pads labels unpredictably ("100" rendered as "1…").
+     Use <div role="button" tabindex="0"> instead.
    ========================================================================== */
 
 :root {
@@ -28,6 +31,7 @@
 }
 
 body {
+    position: relative;
     background-color: var(--bg);
     color: var(--text);
     font-family: "Adobe Clean", "SF Pro Text", "Segoe UI", sans-serif;
@@ -61,6 +65,13 @@ body {
 .brand-ver {
     font-size: 10px;
     color: var(--text-dim);
+}
+
+/* ---- Focus ring for div-buttons (divs have no native ring) ------------- */
+
+[role="button"]:focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: 1px;
 }
 
 /* ---- Section labels ---------------------------------------------------- */
@@ -203,34 +214,92 @@ body {
     display: block;
 }
 
-/* ---- Presets ----------------------------------------------------------- */
+/* ---- Preset slots -------------------------------------------------------
+   3 user slots, empty by default. Fill: right-click the value (or drag it
+   here). Load: click. Delete / reorder: right-click menu or drag.        */
 
-/* Percent widths + space-between: immune to UXP's flex-shorthand quirks */
 .presets {
     display: flex;
-    justify-content: space-between;
     margin-bottom: 12px;
 }
 
-.preset-btn {
-    width: 24%;
-    height: 26px;
-    background-color: transparent;
-    border: 1px solid var(--line);
+.preset-slot {
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    min-width: 0;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px dashed var(--line);
     border-radius: 4px;
     color: var(--text-dim);
-    font-size: 11px;
+    font-size: 12px;
+    opacity: 0.45;
+}
+
+.preset-slot + .preset-slot {
+    margin-left: 6px;
+}
+
+.preset-slot.filled {
+    border-style: solid;
+    opacity: 1;
+    font-weight: 600;
     cursor: pointer;
 }
 
-.preset-btn:hover {
+.preset-slot.filled:hover {
     color: var(--text);
     border-color: #555555;
 }
 
-.preset-btn.active {
+.preset-slot.active {
     border-color: var(--accent);
     color: var(--accent);
+}
+
+.preset-slot.drop-target {
+    border-color: var(--accent);
+    border-style: solid;
+    color: var(--accent);
+    opacity: 1;
+}
+
+/* ---- Context menu ------------------------------------------------------- */
+
+.ctx-menu {
+    position: absolute;
+    z-index: 99;
+    min-width: 150px;
+    padding: 4px 0;
+    background-color: var(--bg-raised);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+}
+
+.ctx-item {
+    padding: 7px 12px;
+    font-size: 11px;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.ctx-item:hover {
+    background-color: #3a3a3a;
+    color: var(--accent);
+}
+
+.ctx-item.disabled {
+    color: var(--text-dim);
+    opacity: 0.5;
+    cursor: default;
+}
+
+.ctx-item.disabled:hover {
+    background-color: transparent;
+    color: var(--text-dim);
 }
 
 /* ---- Apply ------------------------------------------------------------- */
@@ -260,7 +329,7 @@ body {
     opacity: 0.5;
 }
 
-/* ---- Status + hint ------------------------------------------------------ */
+/* ---- Status ------------------------------------------------------------- */
 
 .status {
     font-size: 10px;
@@ -272,10 +341,3 @@ body {
 
 .status.ok    { color: #7fc97f; }
 .status.error { color: #e07a7a; }
-
-.hint {
-    font-size: 9px;
-    color: var(--text-dim);
-    text-align: center;
-    opacity: 0.6;
-}

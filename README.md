@@ -7,8 +7,9 @@ For Photoshop 2025/2026 (UXP — CEP panels no longer load there).
 ## Features
 
 - **D-pad** — pick which side the margin is measured from (▲ ▼ ◀ ▶), or **◎ Center** to center the canvas on Path 1
-- Margin in px from the canvas edge to the object, ±5 stepper, presets 30 / 50 / 60 / 100
-- Keyboard: arrows = side, **C** = center, **Enter** = apply
+- Margin in px from the canvas edge to the object, ±5 stepper
+- **3 user preset slots** (empty by default): right-click the value — or drag it onto a slot — to save; click to load; right-click / drag to reorder or delete
+- Keyboard: arrows = side, **C** = center, **Tab** → margin field, **Enter** in the field → focus APPLY, **Enter** = apply
 - Crop with `delete: false` — pixels outside the canvas survive, everything in a single History step
 - Settings persist between sessions (localStorage)
 

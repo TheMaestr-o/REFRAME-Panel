@@ -11,46 +11,45 @@
             <span class="brand-ver">v2.1 · Maestro</span>
         </div>
 
-        <!-- Side selector -->
+        <!-- Side selector (mouse or arrow keys — not in the Tab ring) -->
         <div class="section-label">Side</div>
         <div class="dpad">
             <div class="dpad-row">
-                <button class="dpad-btn" id="side-top" data-side="top" title="Margin from top">▲</button>
+                <div class="dpad-btn" id="side-top" data-side="top" title="Margin from top" role="button" tabindex="-1">▲</div>
             </div>
             <div class="dpad-row">
-                <button class="dpad-btn" id="side-left" data-side="left" title="Margin from left">◀</button>
-                <button class="dpad-btn dpad-center" id="side-center" data-side="center" title="Center on Path 1">◎</button>
-                <button class="dpad-btn" id="side-right" data-side="right" title="Margin from right">▶</button>
+                <div class="dpad-btn" id="side-left" data-side="left" title="Margin from left" role="button" tabindex="-1">◀</div>
+                <div class="dpad-btn dpad-center" id="side-center" data-side="center" title="Center on Path 1" role="button" tabindex="-1">◎</div>
+                <div class="dpad-btn" id="side-right" data-side="right" title="Margin from right" role="button" tabindex="-1">▶</div>
             </div>
             <div class="dpad-row">
-                <button class="dpad-btn" id="side-bottom" data-side="bottom" title="Margin from bottom">▼</button>
+                <div class="dpad-btn" id="side-bottom" data-side="bottom" title="Margin from bottom" role="button" tabindex="-1">▼</div>
             </div>
         </div>
 
         <!-- Margin -->
         <div class="section-label" id="margin-label">Margin</div>
         <div class="stepper" id="stepper">
-            <button class="step-btn" id="step-minus" title="−5">−</button>
-            <div class="value-box" id="value-box" title="Click to type a value">
+            <div class="step-btn" id="step-minus" title="−5" role="button" tabindex="-1">−</div>
+            <div class="value-box" id="value-box" role="button" tabindex="0" draggable="true"
+                 title="Click or Tab to type · right-click / drag down to save as preset">
                 <span class="value-num" id="value-num">50</span>
                 <span class="value-unit">px</span>
             </div>
             <input class="margin-input" id="margin" type="text" inputmode="numeric" value="50" spellcheck="false" />
-            <button class="step-btn" id="step-plus" title="+5">+</button>
+            <div class="step-btn" id="step-plus" title="+5" role="button" tabindex="-1">+</div>
         </div>
 
+        <!-- User presets: empty by default, filled via right-click / drag on the value -->
         <div class="presets" id="presets">
-            <button class="preset-btn" data-val="30">30</button>
-            <button class="preset-btn" data-val="50">50</button>
-            <button class="preset-btn" data-val="60">60</button>
-            <button class="preset-btn" data-val="100">100</button>
+            <div class="preset-slot" data-index="0"></div>
+            <div class="preset-slot" data-index="1"></div>
+            <div class="preset-slot" data-index="2"></div>
         </div>
 
-        <button class="apply-btn" id="apply">APPLY</button>
+        <div class="apply-btn" id="apply" role="button" tabindex="0">APPLY</div>
 
         <div class="status" id="status">Ready</div>
-
-        <div class="hint">↑ ↓ ← → side &nbsp;·&nbsp; C center &nbsp;·&nbsp; Enter apply</div>
 
     </div>
     <script src="index.js"></script>

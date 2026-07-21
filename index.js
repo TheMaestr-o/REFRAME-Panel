@@ -1,5 +1,5 @@
 /* ==========================================================================
-   REFRAME v2.1.1  (UXP Panel)
+   REFRAME v2.1.2  (UXP Panel)
    AUTHOR: MAESTRO | © 2026
    --------------------------------------------------------------------------
    Repositions the canvas around "Path 1" — non-destructively.
@@ -13,9 +13,16 @@
    - UXP panel (PS 2025/2026 compatible — CEP no longer loads there)
    - settings persist via localStorage
    - keyboard: arrows = side, C = center, Enter = apply
-   New in 2.1.0:
-   - UI rebuilt on UXP-safe CSS (no flex-wrap, no stretched inputs)
-   - all UI strings in English
+   New in 2.1.0/2.1.1:
+   - UI rebuilt on UXP-safe CSS; all strings English; centered value display
+   New in 2.1.2:
+   - Buttons are <div role="button">, not <button> — UXP's native button
+     truncates/pads labels unpredictably (root cause of earlier layout bugs)
+   - Fixed presets replaced by 3 user slots (empty by default): right-click
+     or drag the value to save, click to load, right-click / drag to
+     reorder or delete; persisted in localStorage
+   - Tab ring: value field → presets → APPLY; Enter in the field jumps
+     focus to APPLY so the next Enter applies
    ========================================================================== */
 
 const { app, core, action } = require("photoshop");
@@ -24,8 +31,12 @@ const batchPlay = action.batchPlay;
 /* ---------------- state ---------------- */
 
 const SIDES = ["top", "bottom", "left", "right", "center"];
+const MAX_PRESETS = 3;
 let currentSide = localStorage.getItem("reframe.side") || "top";
 let savedMargin = localStorage.getItem("reframe.margin") || "50";
+let presets = loadPresets();
+let busy = false;          // guards Apply while a crop is running
+let dragPayload = null;    // "value" | {slot: i} — dataTransfer is flaky in UXP
 
 /* ---------------- dom ---------------- */
 
@@ -36,6 +47,9 @@ const valueNum = $("value-num");
 const statusEl = $("status");
 const applyBtn = $("apply");
 const stepperEl = $("stepper");
+const slots = Array.prototype.slice.call(
+    document.querySelectorAll(".preset-slot")
+);
 
 /* ---------------- ui helpers ---------------- */
 
@@ -77,15 +91,116 @@ function setMargin(v) {
     updatePresetHighlight();
 }
 
+/* ---------------- presets (3 user slots) ---------------- */
+
+function loadPresets() {
+    try {
+        const a = JSON.parse(localStorage.getItem("reframe.presets") || "[]");
+        if (!Array.isArray(a)) return [];
+        return a
+            .filter((n) => typeof n === "number" && isFinite(n) && n >= 0)
+            .map((n) => Math.round(n))
+            .slice(0, MAX_PRESETS);
+    } catch (e) {
+        return [];
+    }
+}
+
+function persistPresets() {
+    localStorage.setItem("reframe.presets", JSON.stringify(presets));
+    renderPresets();
+}
+
+function renderPresets() {
+    slots.forEach((el, i) => {
+        const val = presets[i];
+        const filled = val !== undefined;
+        el.textContent = filled ? String(val) : "+";
+        el.classList.toggle("filled", filled);
+        if (filled) {
+            el.setAttribute("role", "button");
+            el.setAttribute("tabindex", "0");
+            el.setAttribute("draggable", "true");
+            el.setAttribute("title", val + " px — click to load · right-click / drag to manage");
+        } else {
+            el.removeAttribute("role");
+            el.removeAttribute("tabindex");
+            el.removeAttribute("draggable");
+            el.setAttribute("title", "Empty slot — right-click the value above (or drag it here) to save");
+        }
+    });
+    updatePresetHighlight();
+}
+
 function updatePresetHighlight() {
-    const v = marginInput.value;
-    document.querySelectorAll(".preset-btn").forEach((b) => {
-        b.classList.toggle(
+    slots.forEach((el, i) => {
+        el.classList.toggle(
             "active",
-            b.dataset.val === v && currentSide !== "center"
+            presets[i] !== undefined &&
+                String(presets[i]) === marginInput.value &&
+                currentSide !== "center"
         );
     });
 }
+
+function savePreset(value) {
+    if (presets.length >= MAX_PRESETS) return;
+    presets.push(value);
+    persistPresets();
+    setStatus("Preset " + value + " px saved", "ok");
+}
+
+function deletePreset(i) {
+    const val = presets[i];
+    presets.splice(i, 1);
+    persistPresets();
+    setStatus("Preset " + val + " px deleted");
+}
+
+function movePreset(i, dir) {
+    const j = i + dir;
+    if (j < 0 || j >= presets.length) return;
+    const t = presets[i];
+    presets[i] = presets[j];
+    presets[j] = t;
+    persistPresets();
+}
+
+/* ---------------- context menu ---------------- */
+
+let menuEl = null;
+
+function closeMenu() {
+    if (menuEl && menuEl.parentNode) menuEl.parentNode.removeChild(menuEl);
+    menuEl = null;
+}
+
+function showMenu(x, y, items) {
+    closeMenu();
+    menuEl = document.createElement("div");
+    menuEl.className = "ctx-menu";
+    items.forEach((it) => {
+        const row = document.createElement("div");
+        row.className = "ctx-item" + (it.disabled ? " disabled" : "");
+        row.textContent = it.label;
+        if (!it.disabled) {
+            row.addEventListener("click", (e) => {
+                e.stopPropagation();
+                closeMenu();
+                it.onClick();
+            });
+        }
+        menuEl.appendChild(row);
+    });
+    document.body.appendChild(menuEl);
+    // keep the menu inside the panel
+    const bw = document.body.getBoundingClientRect().width;
+    const mw = menuEl.getBoundingClientRect().width;
+    menuEl.style.left = Math.max(4, Math.min(x, bw - mw - 4)) + "px";
+    menuEl.style.top = y + "px";
+}
+
+document.addEventListener("click", closeMenu);
 
 /* ---------------- photoshop ---------------- */
 
@@ -199,6 +314,8 @@ function findPath(doc) {
 /* ---------------- core operation ---------------- */
 
 async function performReframe() {
+    if (busy) return;
+
     const doc = app.activeDocument;
     if (!doc) {
         setStatus("No document open", "error");
@@ -214,8 +331,8 @@ async function performReframe() {
     const side = currentSide;
     const margin = getMargin();
 
+    busy = true;
     applyBtn.classList.add("busy");
-    applyBtn.disabled = true;
     setStatus("Applying…");
 
     try {
@@ -286,22 +403,15 @@ async function performReframe() {
     } catch (e) {
         setStatus("Error: " + (e.message || e), "error");
     } finally {
+        busy = false;
         applyBtn.classList.remove("busy");
-        applyBtn.disabled = false;
     }
 }
 
-/* ---------------- events ---------------- */
+/* ---------------- events: sides + stepper ---------------- */
 
 document.querySelectorAll(".dpad-btn").forEach((btn) => {
     btn.addEventListener("click", () => selectSide(btn.dataset.side));
-});
-
-document.querySelectorAll(".preset-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-        if (currentSide === "center") return;
-        setMargin(parseInt(btn.dataset.val, 10));
-    });
 });
 
 $("step-minus").addEventListener("click", () => {
@@ -319,10 +429,13 @@ marginInput.addEventListener("input", () => {
 });
 marginInput.addEventListener("change", () => setMargin(getMargin()));
 
-/* Click the value display → swap in the real input for typing.
+/* ---------------- events: value box (edit / save preset) ---------------- */
+
+/* Click, Tab-focus → swap in the real input for typing.
    (UXP can't center text inside <input>, so the resting state is a DIV.) */
 function enterEdit() {
     if (currentSide === "center") return;
+    if (stepperEl.classList.contains("editing")) return;
     stepperEl.classList.add("editing");
     marginInput.value = savedMargin;
     marginInput.focus();
@@ -336,13 +449,134 @@ function exitEdit() {
 }
 
 valueBox.addEventListener("click", enterEdit);
+valueBox.addEventListener("focus", enterEdit);
 marginInput.addEventListener("blur", exitEdit);
+
+/* Enter in the field: commit, move focus to APPLY (next Enter applies).
+   Escape: cancel the edit, keep the previous value. */
+marginInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        exitEdit();
+        applyBtn.focus();
+    } else if (e.key === "Escape") {
+        marginInput.value = savedMargin;
+        exitEdit();
+    }
+});
+
+valueBox.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    const v = getMargin();
+    showMenu(e.clientX || 20, e.clientY || 20, [
+        presets.length < MAX_PRESETS
+            ? { label: "Save " + v + " px as preset", onClick: () => savePreset(v) }
+            : { label: "Presets full (3/3)", disabled: true }
+    ]);
+});
+
+valueBox.addEventListener("dragstart", (e) => {
+    dragPayload = "value";
+    try { e.dataTransfer.setData("text/plain", "reframe-value"); } catch (err) {}
+});
+valueBox.addEventListener("dragend", () => { dragPayload = null; });
+
+/* ---------------- events: preset slots ---------------- */
+
+slots.forEach((el, i) => {
+    // load on click (filled only; ignored in Center mode like before)
+    el.addEventListener("click", () => {
+        if (presets[i] === undefined || currentSide === "center") return;
+        setMargin(presets[i]);
+    });
+
+    // right-click: save (empty) / move + delete (filled)
+    el.addEventListener("contextmenu", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const x = e.clientX || 20;
+        const y = e.clientY || 20;
+        if (presets[i] === undefined) {
+            const v = getMargin();
+            showMenu(x, y, [
+                presets.length < MAX_PRESETS
+                    ? { label: "Save " + v + " px here", onClick: () => savePreset(v) }
+                    : { label: "Presets full (3/3)", disabled: true }
+            ]);
+            return;
+        }
+        const items = [];
+        if (i > 0) items.push({ label: "◀ Move left", onClick: () => movePreset(i, -1) });
+        if (i < presets.length - 1) items.push({ label: "Move right ▶", onClick: () => movePreset(i, 1) });
+        items.push({ label: "Delete " + presets[i] + " px", onClick: () => deletePreset(i) });
+        showMenu(x, y, items);
+    });
+
+    // drag source (reorder)
+    el.addEventListener("dragstart", (e) => {
+        if (presets[i] === undefined) return;
+        dragPayload = { slot: i };
+        try { e.dataTransfer.setData("text/plain", "reframe-slot-" + i); } catch (err) {}
+    });
+    el.addEventListener("dragend", () => { dragPayload = null; });
+
+    // drop target (value → save/overwrite, slot → swap)
+    el.addEventListener("dragover", (e) => {
+        if (!dragPayload) return;
+        e.preventDefault();
+        el.classList.add("drop-target");
+    });
+    el.addEventListener("dragleave", () => el.classList.remove("drop-target"));
+    el.addEventListener("drop", (e) => {
+        e.preventDefault();
+        el.classList.remove("drop-target");
+        if (!dragPayload) return;
+        if (dragPayload === "value") {
+            const v = getMargin();
+            if (presets[i] !== undefined) {
+                presets[i] = v;          // overwrite this slot
+                persistPresets();
+                setStatus("Preset " + v + " px saved", "ok");
+            } else {
+                savePreset(v);           // fill the first free slot
+            }
+        } else if (typeof dragPayload === "object") {
+            const j = dragPayload.slot;
+            if (presets[i] !== undefined && i !== j) {
+                const t = presets[i];    // swap two filled slots
+                presets[i] = presets[j];
+                presets[j] = t;
+                persistPresets();
+            } else if (presets[i] === undefined) {
+                const v = presets[j];    // move into an empty slot (append)
+                presets.splice(j, 1);
+                presets.push(v);
+                persistPresets();
+            }
+        }
+        dragPayload = null;
+    });
+});
+
+/* ---------------- events: apply + keyboard ---------------- */
 
 applyBtn.addEventListener("click", performReframe);
 
-// Keyboard: arrows = side, C = center, Enter = apply
+// Arrows = side, C = center, Enter = apply (or activate the focused
+// div-button — native <button> did Enter/Space for free, divs don't).
 document.addEventListener("keydown", (e) => {
-    if (e.target === marginInput && e.key !== "Enter") return;
+    if (e.target === marginInput) return; // field has its own handler
+    if (e.key === "Escape") { closeMenu(); return; }
+
+    if (e.key === "Enter" || e.key === " ") {
+        const t = e.target;
+        if (t && t.getAttribute && t.getAttribute("role") === "button" && t !== valueBox) {
+            e.preventDefault();
+            t.click();
+            return;
+        }
+    }
+
     switch (e.key) {
         case "ArrowUp":    selectSide("top");    e.preventDefault(); break;
         case "ArrowDown":  selectSide("bottom"); e.preventDefault(); break;
@@ -350,7 +584,7 @@ document.addEventListener("keydown", (e) => {
         case "ArrowRight": selectSide("right");  e.preventDefault(); break;
         case "c":
         case "C":          selectSide("center"); break;
-        case "Enter":      exitEdit(); performReframe(); break;
+        case "Enter":      performReframe();     break;
     }
 });
 
@@ -358,5 +592,6 @@ document.addEventListener("keydown", (e) => {
 
 marginInput.value = savedMargin;
 valueNum.textContent = savedMargin;
+renderPresets();
 selectSide(SIDES.includes(currentSide) ? currentSide : "top");
 setStatus("Ready");
