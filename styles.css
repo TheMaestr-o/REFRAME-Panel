@@ -32,18 +32,27 @@
 
 html {
     height: 100%;
+    overflow: hidden;
     background-color: var(--bg);
 }
 
-::-webkit-scrollbar {
+/* No scroll artifacts, ever: content is guaranteed to fit the panel
+   minimum, so scrolling is simply off (the grey corner square was a
+   webview scroll element). */
+::-webkit-scrollbar,
+::-webkit-scrollbar-corner,
+::-webkit-scrollbar-thumb,
+::-webkit-resizer {
+    display: none;
     width: 0px;
     height: 0px;
+    background: transparent;
 }
 
 body {
     position: relative;
     height: 100%;
-    overflow-x: hidden;
+    overflow: hidden;
     background-color: var(--bg);
     color: var(--text);
     font-family: "Adobe Clean", "SF Pro Text", "Segoe UI", sans-serif;
