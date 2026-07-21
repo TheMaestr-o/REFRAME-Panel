@@ -232,7 +232,7 @@ body {
 .presets {
     display: flex;
     justify-content: center;
-    margin-bottom: 8px;
+    margin-bottom: 6px; /* same gap above APPLY as the stepper's */
 }
 
 /* 3 visible slots: edge-to-edge grid, two equal 2% gaps (no calc needed) */
