@@ -1,5 +1,5 @@
 /* ==========================================================================
-   REFRAME v2.1.2  (UXP Panel)
+   REFRAME v2.2.0  (UXP Panel)
    AUTHOR: MAESTRO | © 2026
    --------------------------------------------------------------------------
    Repositions the canvas around "Path 1" — non-destructively.
@@ -23,6 +23,13 @@
      reorder or delete; persisted in localStorage
    - Tab ring: value field → presets → APPLY; Enter in the field jumps
      focus to APPLY so the next Enter applies
+   New in 2.2.0:
+   - APPLY label centered (the div conversion had lost the free centering)
+   - presets are unique (dedupe on save/drop + self-heal stored state)
+   - empty slots hidden at rest, appear as drop-zones only while dragging;
+     filled chips render as a centered group
+   - transient status: nothing under APPLY at rest, messages fade after 2.5s
+   - header is just the authorship line
    ========================================================================== */
 
 const { app, core, action } = require("photoshop");
@@ -47,15 +54,31 @@ const valueNum = $("value-num");
 const statusEl = $("status");
 const applyBtn = $("apply");
 const stepperEl = $("stepper");
+const panelEl = document.querySelector(".panel");
+const presetsEl = $("presets");
 const slots = Array.prototype.slice.call(
     document.querySelectorAll(".preset-slot")
 );
 
 /* ---------------- ui helpers ---------------- */
 
-function setStatus(msg, cls) {
+let statusTimer = null;
+
+/* Transient: nothing under APPLY at rest. A message shows, then fades.
+   sticky=true (e.g. "Applying…") stays until the next message replaces it. */
+function setStatus(msg, cls, sticky) {
+    if (statusTimer) {
+        clearTimeout(statusTimer);
+        statusTimer = null;
+    }
     statusEl.textContent = msg;
-    statusEl.className = "status" + (cls ? " " + cls : "");
+    statusEl.className = "status" + (cls ? " " + cls : "") + (msg ? "" : " hidden");
+    if (msg && !sticky) {
+        statusTimer = setTimeout(() => {
+            statusEl.textContent = "";
+            statusEl.className = "status hidden";
+        }, 2500);
+    }
 }
 
 function selectSide(side) {
@@ -97,10 +120,15 @@ function loadPresets() {
     try {
         const a = JSON.parse(localStorage.getItem("reframe.presets") || "[]");
         if (!Array.isArray(a)) return [];
-        return a
+        const clean = a
             .filter((n) => typeof n === "number" && isFinite(n) && n >= 0)
-            .map((n) => Math.round(n))
-            .slice(0, MAX_PRESETS);
+            .map((n) => Math.round(n));
+        // unique values only — self-heals older duplicated state
+        const unique = [];
+        clean.forEach((n) => {
+            if (unique.indexOf(n) === -1) unique.push(n);
+        });
+        return unique.slice(0, MAX_PRESETS);
     } catch (e) {
         return [];
     }
@@ -112,11 +140,13 @@ function persistPresets() {
 }
 
 function renderPresets() {
+    presetsEl.classList.toggle("none", presets.length === 0);
     slots.forEach((el, i) => {
         const val = presets[i];
         const filled = val !== undefined;
         el.textContent = filled ? String(val) : "+";
         el.classList.toggle("filled", filled);
+        el.classList.toggle("empty", !filled);
         if (filled) {
             el.setAttribute("role", "button");
             el.setAttribute("tabindex", "0");
@@ -144,6 +174,10 @@ function updatePresetHighlight() {
 }
 
 function savePreset(value) {
+    if (presets.indexOf(value) !== -1) {
+        setStatus("Preset " + value + " px already saved");
+        return;
+    }
     if (presets.length >= MAX_PRESETS) return;
     presets.push(value);
     persistPresets();
@@ -333,7 +367,7 @@ async function performReframe() {
 
     busy = true;
     applyBtn.classList.add("busy");
-    setStatus("Applying…");
+    setStatus("Applying…", null, true);
 
     try {
         await core.executeAsModal(
@@ -477,9 +511,13 @@ valueBox.addEventListener("contextmenu", (e) => {
 
 valueBox.addEventListener("dragstart", (e) => {
     dragPayload = "value";
+    panelEl.classList.add("dragging"); // reveal the drop-zones
     try { e.dataTransfer.setData("text/plain", "reframe-value"); } catch (err) {}
 });
-valueBox.addEventListener("dragend", () => { dragPayload = null; });
+valueBox.addEventListener("dragend", () => {
+    dragPayload = null;
+    panelEl.classList.remove("dragging");
+});
 
 /* ---------------- events: preset slots ---------------- */
 
@@ -516,9 +554,13 @@ slots.forEach((el, i) => {
     el.addEventListener("dragstart", (e) => {
         if (presets[i] === undefined) return;
         dragPayload = { slot: i };
+        panelEl.classList.add("dragging");
         try { e.dataTransfer.setData("text/plain", "reframe-slot-" + i); } catch (err) {}
     });
-    el.addEventListener("dragend", () => { dragPayload = null; });
+    el.addEventListener("dragend", () => {
+        dragPayload = null;
+        panelEl.classList.remove("dragging");
+    });
 
     // drop target (value → save/overwrite, slot → swap)
     el.addEventListener("dragover", (e) => {
@@ -533,7 +575,9 @@ slots.forEach((el, i) => {
         if (!dragPayload) return;
         if (dragPayload === "value") {
             const v = getMargin();
-            if (presets[i] !== undefined) {
+            if (presets.indexOf(v) !== -1) {
+                setStatus("Preset " + v + " px already saved");
+            } else if (presets[i] !== undefined) {
                 presets[i] = v;          // overwrite this slot
                 persistPresets();
                 setStatus("Preset " + v + " px saved", "ok");
@@ -555,6 +599,7 @@ slots.forEach((el, i) => {
             }
         }
         dragPayload = null;
+        panelEl.classList.remove("dragging");
     });
 });
 
@@ -594,4 +639,3 @@ marginInput.value = savedMargin;
 valueNum.textContent = savedMargin;
 renderPresets();
 selectSide(SIDES.includes(currentSide) ? currentSide : "top");
-setStatus("Ready");
