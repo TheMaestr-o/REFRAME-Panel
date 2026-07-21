@@ -1,31 +1,32 @@
-# REFRAME v2.0 — UXP Panel for Photoshop
+# REFRAME — UXP Panel for Photoshop
 
-Панель для Photoshop 2025/2026 (UXP): переставляет холст вокруг «Path 1» без разрушения пикселей.
-Размер холста всегда остаётся ровно W × H.
+Repositions the canvas around **"Path 1"** — non-destructively. Canvas size always stays exactly W × H, pixels outside the canvas are never deleted.
 
-## Возможности
+For Photoshop 2025/2026 (UXP — CEP panels no longer load there).
 
-- **Крестовина** — выбор стороны отступа (▲ ▼ ◀ ▶) или **◎ Center** для центрирования по Path 1
-- Отступ в px от края холста до объекта, шаг ±5, пресеты 30/50/60/100
-- Клавиатура: стрелки = сторона, **C** = центр, **Enter** = применить
-- Crop с `delete: false` — пиксели за холстом не удаляются, всё в одном шаге History
-- Настройки сохраняются между сессиями (localStorage)
+## Features
 
-## Установка
+- **D-pad** — pick which side the margin is measured from (▲ ▼ ◀ ▶), or **◎ Center** to center the canvas on Path 1
+- Margin in px from the canvas edge to the object, ±5 stepper, presets 30 / 50 / 60 / 100
+- Keyboard: arrows = side, **C** = center, **Enter** = apply
+- Crop with `delete: false` — pixels outside the canvas survive, everything in a single History step
+- Settings persist between sessions (localStorage)
 
-См. [INSTALL.md](INSTALL.md). Кратко:
+## Install
 
-- **Вариант A (разработка):** UXP Developer Tools → Add Plugin → `manifest.json` → Load
-- **Вариант B (постоянно):** собрать `.ccx` (UDT → Package) → двойной клик → Creative Cloud установит
+See [INSTALL.md](INSTALL.md). Short version:
 
-## Структура
+- **Permanent:** download `com.maestro.reframe_x.y.z.ccx` from [Releases](../../releases) → double-click → Creative Cloud installs it
+- **Development:** UXP Developer Tools → Add Plugin → `manifest.json` → Load
 
-| Файл | Назначение |
+## Structure
+
+| File | Purpose |
 |---|---|
-| `manifest.json` | UXP-манифест (manifestVersion 5, apiVersion 2) |
-| `index.html` / `styles.css` | UI панели |
-| `index.js` | Логика: batchPlay crop вокруг Path 1 |
+| `manifest.json` | UXP manifest (manifestVersion 5, apiVersion 2) |
+| `index.html` / `styles.css` | Panel UI (UXP-safe CSS: no flex-wrap, no gap, no stretched inputs) |
+| `index.js` | Logic: batchPlay crop around Path 1 |
 
-Порт ExtendScript-версии v1.1.0 → UXP (CEP в PS 2025+ больше не работает).
+Ported from the ExtendScript v1.1.0 version.
 
 © 2026 MAESTRO

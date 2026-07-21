@@ -1,35 +1,33 @@
-# REFRAME v2.0 — установка (Photoshop 2026)
+# REFRAME — Installation (Photoshop 2025/2026)
 
-## Вариант A: разработка / первый запуск (UXP Developer Tool)
+## Option A: Permanent install (.ccx) — recommended
 
-1. Creative Cloud Desktop → вкладка **Marketplace** → найди **UXP Developer Tools** → установи.
-2. Открой UDT. Photoshop должен быть запущен.
-3. UDT: **Add Plugin** → выбери файл `manifest.json` из этой папки.
-4. Рядом с плагином нажми **••• → Load**.
-5. В Photoshop: **Zusatzmodule (Plugins) → REFRAME by Maestro → REFRAME** — панель откроется и её можно пристыковать как любую другую.
+1. Download `com.maestro.reframe_x.y.z.ccx` from [Releases](../../releases).
+2. Double-click the file → Creative Cloud installs the plugin.
+3. In Photoshop: **Plugins → REFRAME by Maestro → REFRAME** — the panel opens and can be docked like any other.
 
-`••• → Watch` — панель будет сама перезагружаться при изменении файлов (удобно для правок).
+## Option B: Development (UXP Developer Tool)
 
-## Вариант B: постоянная установка (.ccx)
+1. Creative Cloud Desktop → **Marketplace** tab → search **UXP Developer Tools** → install.
+2. Open UDT. Photoshop must be running.
+3. UDT: **Add Plugin** → select `manifest.json` from this folder.
+4. Next to the plugin click **••• → Load**.
+5. **••• → Watch** — the panel auto-reloads when files change (handy for tweaks).
 
-1. В UDT: **••• → Package** → получишь `com.maestro.reframe_2.0.0.ccx`.
-2. Двойной клик по `.ccx` → Creative Cloud установит плагин навсегда.
-3. После этого UDT больше не нужен — панель живёт в Photoshop сама.
+## Option C: System plugins folder (no UDT, macOS)
 
-## Использование
+Copy the plugin folder to:
 
-- **Крестовина** — выбери сторону, от которой считается отступ (▲ ▼ ◀ ▶), или **◎ Center** для центрирования по Path 1.
-- **Поле px** — отступ от края холста до объекта. Цифры стоят ровно по центру поля.
-- Кнопки **− / +** меняют значение шагом 5, пресеты 30/50/60/100 — в один клик.
-- **Anwenden** (или Enter) — применить. Стрелки клавиатуры выбирают сторону, C = Center.
-- Размер холста не меняется, пиксели за холстом не удаляются (crop с `delete: false`), всё в одном шаге History.
-
-## Тонкая настройка центровки цифр
-
-Если на твоей машине цифры в поле кажутся на 1 px выше/ниже центра — открой `styles.css`, найди вверху:
-
-```css
---input-nudge: 2px;
+```
+/Library/Application Support/Adobe/UXP/Plugins/External/com.maestro.reframe
 ```
 
-и поставь `1px` или `3px`. Это компенсация особенности рендера текста в UXP-полях.
+and restart Photoshop. It loads automatically at every start.
+
+## Usage
+
+- **D-pad** — pick the side the margin is measured from (▲ ▼ ◀ ▶), or **◎ Center** to center on Path 1.
+- **px field** — distance from the canvas edge to the object.
+- **− / +** change the value in steps of 5; presets 30/50/60/100 are one click away.
+- **Apply** (or Enter) — run it. Arrow keys pick the side, C = Center.
+- Canvas size never changes, pixels outside the canvas are kept (crop with `delete: false`), all in one History step.

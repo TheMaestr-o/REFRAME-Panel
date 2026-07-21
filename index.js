@@ -1,5 +1,5 @@
 /* ==========================================================================
-   REFRAME v2.0.0  (UXP Panel)
+   REFRAME v2.1.0  (UXP Panel)
    AUTHOR: MAESTRO | © 2026
    --------------------------------------------------------------------------
    Repositions the canvas around "Path 1" — non-destructively.
@@ -11,9 +11,11 @@
    - safe when no document is open
    New in 2.0.0:
    - UXP panel (PS 2025/2026 compatible — CEP no longer loads there)
-   - digits in the margin field are vertically + horizontally centered
    - settings persist via localStorage
    - keyboard: arrows = side, C = center, Enter = apply
+   New in 2.1.0:
+   - UI rebuilt on UXP-safe CSS (no flex-wrap, no stretched inputs)
+   - all UI strings in English
    ========================================================================== */
 
 const { app, core, action } = require("photoshop");
@@ -54,8 +56,8 @@ function selectSide(side) {
     stepperEl.classList.toggle("disabled", isCenter);
     marginInput.disabled = isCenter;
     $("margin-label").textContent = isCenter
-        ? "Abstand (px) — bei Zentrieren ignoriert"
-        : "Abstand (px)";
+        ? "Margin (px) — ignored for Center"
+        : "Margin (px)";
 
     updatePresetHighlight();
 }
@@ -196,13 +198,13 @@ function findPath(doc) {
 async function performReframe() {
     const doc = app.activeDocument;
     if (!doc) {
-        setStatus("Kein Dokument geöffnet", "error");
+        setStatus("No document open", "error");
         return;
     }
 
     const path = findPath(doc);
     if (!path) {
-        setStatus("Path 1 nicht gefunden", "error");
+        setStatus("Path 1 not found", "error");
         return;
     }
 
@@ -210,7 +212,8 @@ async function performReframe() {
     const margin = getMargin();
 
     applyBtn.classList.add("busy");
-    setStatus("Wird angewendet …");
+    applyBtn.disabled = true;
+    setStatus("Applying…");
 
     try {
         await core.executeAsModal(
@@ -230,7 +233,7 @@ async function performReframe() {
                     const b = await getSelectionBounds();
                     await deselect();
 
-                    if (!b) throw new Error("Pfad ergab keine Auswahl");
+                    if (!b) throw new Error("Path gave no selection");
 
                     const cx = (b.left + b.right) / 2;
                     const cy = (b.top + b.bottom) / 2;
@@ -273,19 +276,16 @@ async function performReframe() {
 
         setStatus(
             side === "center"
-                ? "Zentriert ✓"
-                : "Fertig ✓ · " + margin + " px " + sideLabel(side),
+                ? "Centered ✓"
+                : "Done ✓ · " + margin + " px " + side,
             "ok"
         );
     } catch (e) {
-        setStatus("Fehler: " + (e.message || e), "error");
+        setStatus("Error: " + (e.message || e), "error");
     } finally {
         applyBtn.classList.remove("busy");
+        applyBtn.disabled = false;
     }
-}
-
-function sideLabel(s) {
-    return { top: "oben", bottom: "unten", left: "links", right: "rechts" }[s] || s;
 }
 
 /* ---------------- events ---------------- */
@@ -336,4 +336,4 @@ document.addEventListener("keydown", (e) => {
 
 marginInput.value = savedMargin;
 selectSide(SIDES.includes(currentSide) ? currentSide : "top");
-setStatus("Bereit");
+setStatus("Ready");

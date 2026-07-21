@@ -1,6 +1,13 @@
 /* ==========================================================================
-   REFRAME v2.0 — UXP Panel Theme
+   REFRAME v2.1 — UXP Panel Theme
    Dark, matches Photoshop UI. Amber accent (Maestro signature).
+   --------------------------------------------------------------------------
+   UXP CSS rules of engagement (learned the hard way in v2.0):
+   - NO flex-wrap (unsupported → layout explodes). D-pad is built from
+     explicit flex rows instead.
+   - NO stretched inputs: UXP does not vertically center input text inside
+     a tall box. The field gets a natural height and sits in a flex row.
+   - NO `gap`: spacing is done with margins.
    ========================================================================== */
 
 :root {
@@ -12,11 +19,6 @@
     --text-dim:    #8a8a8a;
     --accent:      #f5b942;
     --accent-text: #1a1a1a;
-
-    /* Vertical fine-tuning of digits inside the input.
-       UXP renders input text a bit above center — this nudges it down.
-       If digits look 1px off on your machine, change to 1px / 3px. */
-    --input-nudge: 2px;
 }
 
 * {
@@ -33,7 +35,7 @@ body {
 }
 
 .panel {
-    padding: 14px 14px 12px;
+    padding: 12px 12px 10px;
     display: flex;
     flex-direction: column;
 }
@@ -44,8 +46,8 @@ body {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    padding-bottom: 10px;
-    margin-bottom: 12px;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
     border-bottom: 1px solid var(--line);
 }
 
@@ -71,23 +73,22 @@ body {
     margin-bottom: 6px;
 }
 
-/* ---- Directional pad --------------------------------------------------- */
+/* ---- Directional pad ---------------------------------------------------
+   Three explicit flex rows — no wrap, no percentages. Bulletproof in UXP. */
 
 .dpad {
+    margin-bottom: 12px;
+}
+
+.dpad-row {
     display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-    max-width: 156px;
-    margin: 0 auto 14px;
-}
-
-.dpad-cell,
-.dpad-btn {
-    width: 33.33%;
-    height: 46px;
+    justify-content: center;
 }
 
 .dpad-btn {
+    width: 46px;
+    height: 34px;
+    margin: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -95,7 +96,7 @@ body {
     border: 1px solid var(--line);
     border-radius: 4px;
     color: var(--text-dim);
-    font-size: 14px;
+    font-size: 13px;
     cursor: pointer;
 }
 
@@ -112,20 +113,15 @@ body {
 }
 
 .dpad-center {
-    font-size: 17px;
+    font-size: 16px;
 }
 
-/* ---- Margin input (digits dead-center) --------------------------------- */
+/* ---- Margin stepper ---------------------------------------------------- */
 
 .stepper {
     display: flex;
-    align-items: stretch;
-    height: 48px;
+    align-items: center;
     margin-bottom: 8px;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    background-color: var(--bg-input);
-    overflow: hidden;
 }
 
 .stepper.disabled {
@@ -133,43 +129,41 @@ body {
 }
 
 .step-btn {
-    width: 44px;
+    width: 40px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: var(--bg-raised);
-    border: none;
+    border: 1px solid var(--line);
+    border-radius: 4px;
     color: var(--text-dim);
-    font-size: 18px;
+    font-size: 16px;
     cursor: pointer;
 }
 
 .step-btn:hover {
     color: var(--accent);
+    border-color: #555555;
 }
 
-/*  The fix you asked for:
-    - height fills the row, padding is zeroed → no hidden top/bottom offsets
-    - text-align:center → horizontal center
-    - padding-top nudge (var) compensates UXP's slightly-high text baseline
-      → digits sit exactly in the vertical middle of the box                */
 .margin-input {
     flex: 1;
     min-width: 0;
-    height: 100%;
-    padding: 0;
-    padding-top: var(--input-nudge);
-    border: none;
-    background-color: transparent;
+    height: 32px;
+    margin: 0 6px;
+    padding: 0 8px;
+    background-color: var(--bg-input);
+    border: 1px solid var(--line);
+    border-radius: 4px;
     color: var(--text);
-    font-size: 19px;
+    font-size: 16px;
     font-weight: 600;
     text-align: center;
-    letter-spacing: 0.5px;
-    outline: none;
 }
 
 .margin-input:focus {
+    border-color: var(--accent);
     color: var(--accent);
 }
 
@@ -177,8 +171,7 @@ body {
 
 .presets {
     display: flex;
-    gap: 6px;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
 }
 
 .preset-btn {
@@ -190,6 +183,10 @@ body {
     color: var(--text-dim);
     font-size: 11px;
     cursor: pointer;
+}
+
+.preset-btn + .preset-btn {
+    margin-left: 6px;
 }
 
 .preset-btn:hover {
@@ -205,16 +202,16 @@ body {
 /* ---- Apply ------------------------------------------------------------- */
 
 .apply-btn {
-    height: 40px;
+    height: 36px;
     border: none;
-    border-radius: 6px;
+    border-radius: 4px;
     background-color: var(--accent);
     color: var(--accent-text);
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
     cursor: pointer;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .apply-btn:hover {
@@ -227,17 +224,24 @@ body {
 
 .apply-btn.busy {
     opacity: 0.5;
-    pointer-events: none;
 }
 
-/* ---- Status ------------------------------------------------------------ */
+/* ---- Status + hint ------------------------------------------------------ */
 
 .status {
     font-size: 10px;
     color: var(--text-dim);
     text-align: center;
     min-height: 14px;
+    margin-bottom: 4px;
 }
 
 .status.ok    { color: #7fc97f; }
 .status.error { color: #e07a7a; }
+
+.hint {
+    font-size: 9px;
+    color: var(--text-dim);
+    text-align: center;
+    opacity: 0.6;
+}
