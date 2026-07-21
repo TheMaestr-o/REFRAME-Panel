@@ -42,7 +42,7 @@ html {
 
 body {
     position: relative;
-    min-height: 100%;
+    height: 100%;
     overflow-x: hidden;
     background-color: var(--bg);
     color: var(--text);
@@ -51,6 +51,7 @@ body {
 }
 
 .panel {
+    height: 100%;
     padding: 10px;
     display: flex;
     flex-direction: column;
@@ -143,9 +144,10 @@ body {
      swaps in the real <input> for typing (.editing state)               */
 
 .stepper {
+    width: 146px; /* = d-pad visual width: 46+4+46+4+46 */
+    margin: 0 auto 6px;
     display: flex;
     align-items: center;
-    margin-bottom: 6px;
 }
 
 .stepper.disabled {
@@ -153,7 +155,7 @@ body {
 }
 
 .step-btn {
-    width: 40px;
+    width: 46px; /* same column as the d-pad arrows */
     height: 28px;
     display: flex;
     align-items: center;
@@ -175,7 +177,7 @@ body {
     flex-grow: 1;
     flex-shrink: 1;
     height: 28px;
-    margin: 0 6px;
+    margin: 0 4px; /* field lands exactly on the center d-pad column */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -207,8 +209,8 @@ body {
     height: 28px;
     min-height: 28px;
     max-height: 28px;
-    margin: 0 6px;
-    padding: 0 8px;
+    margin: 0 4px;
+    padding: 0 4px;
     background-color: var(--bg-input);
     border: 1px solid var(--accent);
     border-radius: 4px;
@@ -230,12 +232,14 @@ body {
    here). Load: click. Delete / reorder: right-click menu or drag.        */
 
 .presets {
+    width: 146px; /* same 3x46 grid as the d-pad and the stepper */
+    margin: 0 auto 6px;
     display: flex;
     justify-content: center;
-    margin-bottom: 6px; /* same gap above APPLY as the stepper's */
 }
 
-/* 3 visible slots: edge-to-edge grid, two equal 2% gaps (no calc needed) */
+/* 3 visible slots: 46px chips + space-between over 146px = two 4px gaps,
+   flush with the d-pad and stepper columns */
 .presets.grid3 {
     justify-content: space-between;
 }
@@ -250,9 +254,9 @@ body {
 }
 
 .preset-slot {
-    width: 32%;
+    width: 46px;
     height: 26px;
-    margin: 0 3px;
+    margin: 0 2px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -338,6 +342,7 @@ body {
 /* ---- Apply ------------------------------------------------------------- */
 
 .apply-btn {
+    margin-top: auto; /* pinned to the bottom — air below it at any size */
     height: 32px;
     display: flex;
     align-items: center;
