@@ -45,7 +45,7 @@ body {
 }
 
 .panel {
-    padding: 12px 12px 10px;
+    padding: 10px 10px 8px;
     display: flex;
     flex-direction: column;
 }
@@ -53,12 +53,13 @@ body {
 /* ---- Header: authorship only, no divider ------------------------------- */
 
 .signature {
-    font-size: 11px;
+    font-family: "Adobe Clean", "SF Pro Text", "Segoe UI", sans-serif;
+    font-size: 12px;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     color: var(--accent);
     text-align: center;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
 }
 
 /* ---- Focus ring for div-buttons (divs have no native ring) ------------- */
@@ -76,14 +77,14 @@ body {
     text-transform: uppercase;
     letter-spacing: 1.5px;
     color: var(--text-dim);
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 /* ---- Directional pad ---------------------------------------------------
    Three explicit flex rows — no wrap, no percentages. Bulletproof in UXP. */
 
 .dpad {
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .dpad-row {
@@ -122,6 +123,13 @@ body {
     font-size: 16px;
 }
 
+/* Center mode: the margin block does not exist */
+.panel.center-mode .section-label,
+.panel.center-mode .stepper,
+.panel.center-mode .presets {
+    display: none;
+}
+
 /* ---- Margin stepper ----------------------------------------------------
    UXP ignores the `flex: 1` shorthand and `text-align` on inputs, so:
    - growth is set via the flex-grow longhand
@@ -131,7 +139,7 @@ body {
 .stepper {
     display: flex;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .stepper.disabled {
@@ -140,7 +148,7 @@ body {
 
 .step-btn {
     width: 40px;
-    height: 32px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -160,7 +168,7 @@ body {
 .value-box {
     flex-grow: 1;
     flex-shrink: 1;
-    height: 32px;
+    height: 28px;
     margin: 0 6px;
     display: flex;
     align-items: center;
@@ -172,7 +180,7 @@ body {
 }
 
 .value-num {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     color: var(--text);
 }
@@ -190,16 +198,16 @@ body {
     flex-shrink: 1;
     width: 60px;
     min-width: 0;
-    height: 32px;
-    min-height: 32px;
-    max-height: 32px;
+    height: 28px;
+    min-height: 28px;
+    max-height: 28px;
     margin: 0 6px;
     padding: 0 8px;
     background-color: var(--bg-input);
     border: 1px solid var(--accent);
     border-radius: 4px;
     color: var(--text);
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
 }
 
@@ -218,7 +226,16 @@ body {
 .presets {
     display: flex;
     justify-content: center;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
+}
+
+/* 3 visible slots: edge-to-edge grid, two equal 2% gaps (no calc needed) */
+.presets.grid3 {
+    justify-content: space-between;
+}
+
+.presets.grid3 .preset-slot {
+    margin: 0;
 }
 
 /* zero presets + not dragging -> the row does not exist */
@@ -227,8 +244,9 @@ body {
 }
 
 .preset-slot {
-    width: 64px;
-    height: 28px;
+    width: 32%;
+    height: 26px;
+    margin: 0 3px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -250,10 +268,6 @@ body {
 
 .panel.dragging .preset-slot.empty {
     display: flex;
-}
-
-.preset-slot + .preset-slot {
-    margin-left: 6px;
 }
 
 .preset-slot.filled {
@@ -318,7 +332,7 @@ body {
 /* ---- Apply ------------------------------------------------------------- */
 
 .apply-btn {
-    height: 36px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -331,7 +345,6 @@ body {
     font-weight: 700;
     letter-spacing: 2px;
     cursor: pointer;
-    margin-bottom: 8px;
 }
 
 .apply-btn:hover {
@@ -353,7 +366,7 @@ body {
     color: var(--text-dim);
     text-align: center;
     min-height: 14px;
-    margin-bottom: 4px;
+    margin-top: 6px;
 }
 
 .status.hidden {

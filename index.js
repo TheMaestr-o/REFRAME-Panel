@@ -1,5 +1,5 @@
 /* ==========================================================================
-   REFRAME v2.2.0  (UXP Panel)
+   REFRAME v2.2.1  (UXP Panel)
    AUTHOR: MAESTRO | © 2026
    --------------------------------------------------------------------------
    Repositions the canvas around "Path 1" — non-destructively.
@@ -30,6 +30,9 @@
      filled chips render as a centered group
    - transient status: nothing under APPLY at rest, messages fade after 2.5s
    - header is just the authorship line
+   New in 2.2.1:
+   - Center mode hides the whole Margin block (label + field + presets)
+   - 3 presets align to an edge-to-edge grid; compact vertical metrics
    ========================================================================== */
 
 const { app, core, action } = require("photoshop");
@@ -89,14 +92,12 @@ function selectSide(side) {
         b.classList.toggle("active", b.dataset.side === side);
     });
 
-    // Center ignores the margin — grey the field out, but DO NOT change
-    // its value (v1.1.0 fix: saved margin survives Center clicks)
+    // Center ignores the margin — the whole block disappears (CSS
+    // .center-mode); the saved value itself is untouched
     const isCenter = side === "center";
+    panelEl.classList.toggle("center-mode", isCenter);
     stepperEl.classList.toggle("disabled", isCenter);
     marginInput.disabled = isCenter;
-    $("margin-label").textContent = isCenter
-        ? "Margin — ignored for Center"
-        : "Margin";
 
     updatePresetHighlight();
 }
@@ -141,6 +142,7 @@ function persistPresets() {
 
 function renderPresets() {
     presetsEl.classList.toggle("none", presets.length === 0);
+    presetsEl.classList.toggle("grid3", presets.length === 3);
     slots.forEach((el, i) => {
         const val = presets[i];
         const filled = val !== undefined;
@@ -512,11 +514,13 @@ valueBox.addEventListener("contextmenu", (e) => {
 valueBox.addEventListener("dragstart", (e) => {
     dragPayload = "value";
     panelEl.classList.add("dragging"); // reveal the drop-zones
+    presetsEl.classList.add("grid3");  // all 3 slots visible -> grid layout
     try { e.dataTransfer.setData("text/plain", "reframe-value"); } catch (err) {}
 });
 valueBox.addEventListener("dragend", () => {
     dragPayload = null;
     panelEl.classList.remove("dragging");
+    renderPresets(); // restores grid3 only if 3 presets remain
 });
 
 /* ---------------- events: preset slots ---------------- */
@@ -555,11 +559,13 @@ slots.forEach((el, i) => {
         if (presets[i] === undefined) return;
         dragPayload = { slot: i };
         panelEl.classList.add("dragging");
+        presetsEl.classList.add("grid3");
         try { e.dataTransfer.setData("text/plain", "reframe-slot-" + i); } catch (err) {}
     });
     el.addEventListener("dragend", () => {
         dragPayload = null;
         panelEl.classList.remove("dragging");
+        renderPresets();
     });
 
     // drop target (value → save/overwrite, slot → swap)
@@ -600,6 +606,7 @@ slots.forEach((el, i) => {
         }
         dragPayload = null;
         panelEl.classList.remove("dragging");
+        renderPresets();
     });
 });
 
