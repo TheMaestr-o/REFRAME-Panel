@@ -17,14 +17,14 @@
 
 <table>
 <tr>
-<td align="center"><img src="screenshots/screen-1.png" width="260" alt="Side mode with three presets"></td>
-<td align="center"><img src="screenshots/screen-2.png" width="260" alt="Side mode with one preset"></td>
 <td align="center"><img src="screenshots/screen-3.png" width="260" alt="Center mode — minimal"></td>
+<td align="center"><img src="screenshots/screen-2.png" width="260" alt="Side mode with one preset"></td>
+<td align="center"><img src="screenshots/screen-1.png" width="260" alt="Side mode with three presets"></td>
 </tr>
 <tr>
-<td align="center"><sub>Side mode · full preset grid</sub></td>
-<td align="center"><sub>One saved preset · centered</sub></td>
 <td align="center"><sub>◎ Center · the panel folds away</sub></td>
+<td align="center"><sub>One saved preset · centered</sub></td>
+<td align="center"><sub>Side mode · full preset grid</sub></td>
 </tr>
 </table>
 
