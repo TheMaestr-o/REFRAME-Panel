@@ -35,9 +35,15 @@ html {
     background-color: var(--bg);
 }
 
+::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+}
+
 body {
     position: relative;
     min-height: 100%;
+    overflow-x: hidden;
     background-color: var(--bg);
     color: var(--text);
     font-family: "Adobe Clean", "SF Pro Text", "Segoe UI", sans-serif;
@@ -45,7 +51,7 @@ body {
 }
 
 .panel {
-    padding: 10px 10px 8px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
 }
@@ -59,7 +65,7 @@ body {
     letter-spacing: 1px;
     color: var(--accent);
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 /* ---- Focus ring for div-buttons (divs have no native ring) ------------- */
@@ -77,14 +83,14 @@ body {
     text-transform: uppercase;
     letter-spacing: 1.5px;
     color: var(--text-dim);
-    margin-bottom: 4px;
+    margin-bottom: 3px;
 }
 
 /* ---- Directional pad ---------------------------------------------------
    Three explicit flex rows — no wrap, no percentages. Bulletproof in UXP. */
 
 .dpad {
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .dpad-row {
@@ -94,7 +100,7 @@ body {
 
 .dpad-btn {
     width: 46px;
-    height: 34px;
+    height: 32px;
     margin: 2px;
     display: flex;
     align-items: center;
