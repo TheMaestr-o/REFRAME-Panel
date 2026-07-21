@@ -1,5 +1,5 @@
 /* ==========================================================================
-   REFRAME v2.2.4  (UXP Panel)
+   REFRAME v2.2.5  (UXP Panel)
    AUTHOR: MAESTRO | © 2026
    --------------------------------------------------------------------------
    Repositions the canvas around "Path 1" — non-destructively.
