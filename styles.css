@@ -116,7 +116,11 @@ body {
     font-size: 16px;
 }
 
-/* ---- Margin stepper ---------------------------------------------------- */
+/* ---- Margin stepper ----------------------------------------------------
+   UXP ignores the `flex: 1` shorthand and `text-align` on inputs, so:
+   - growth is set via the flex-grow longhand
+   - the value is displayed in a DIV (perfectly centerable); clicking it
+     swaps in the real <input> for typing (.editing state)               */
 
 .stepper {
     display: flex;
@@ -147,35 +151,69 @@ body {
     border-color: #555555;
 }
 
+.value-box {
+    flex-grow: 1;
+    flex-shrink: 1;
+    height: 32px;
+    margin: 0 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-input);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.value-num {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.value-unit {
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-left: 4px;
+    margin-top: 3px;
+}
+
 .margin-input {
-    flex: 1;
+    display: none;
+    flex-grow: 1;
+    flex-shrink: 1;
+    width: 60px;
     min-width: 0;
     height: 32px;
     margin: 0 6px;
     padding: 0 8px;
     background-color: var(--bg-input);
-    border: 1px solid var(--line);
+    border: 1px solid var(--accent);
     border-radius: 4px;
     color: var(--text);
     font-size: 16px;
     font-weight: 600;
-    text-align: center;
 }
 
-.margin-input:focus {
-    border-color: var(--accent);
-    color: var(--accent);
+.stepper.editing .value-box {
+    display: none;
+}
+
+.stepper.editing .margin-input {
+    display: block;
 }
 
 /* ---- Presets ----------------------------------------------------------- */
 
+/* Percent widths + space-between: immune to UXP's flex-shorthand quirks */
 .presets {
     display: flex;
+    justify-content: space-between;
     margin-bottom: 12px;
 }
 
 .preset-btn {
-    flex: 1;
+    width: 24%;
     height: 26px;
     background-color: transparent;
     border: 1px solid var(--line);
@@ -183,10 +221,6 @@ body {
     color: var(--text-dim);
     font-size: 11px;
     cursor: pointer;
-}
-
-.preset-btn + .preset-btn {
-    margin-left: 6px;
 }
 
 .preset-btn:hover {

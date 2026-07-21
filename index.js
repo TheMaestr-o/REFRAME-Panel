@@ -1,5 +1,5 @@
 /* ==========================================================================
-   REFRAME v2.1.0  (UXP Panel)
+   REFRAME v2.1.1  (UXP Panel)
    AUTHOR: MAESTRO | © 2026
    --------------------------------------------------------------------------
    Repositions the canvas around "Path 1" — non-destructively.
@@ -31,6 +31,8 @@ let savedMargin = localStorage.getItem("reframe.margin") || "50";
 
 const $ = (id) => document.getElementById(id);
 const marginInput = $("margin");
+const valueBox = $("value-box");
+const valueNum = $("value-num");
 const statusEl = $("status");
 const applyBtn = $("apply");
 const stepperEl = $("stepper");
@@ -56,8 +58,8 @@ function selectSide(side) {
     stepperEl.classList.toggle("disabled", isCenter);
     marginInput.disabled = isCenter;
     $("margin-label").textContent = isCenter
-        ? "Margin (px) — ignored for Center"
-        : "Margin (px)";
+        ? "Margin — ignored for Center"
+        : "Margin";
 
     updatePresetHighlight();
 }
@@ -69,6 +71,7 @@ function getMargin() {
 
 function setMargin(v) {
     marginInput.value = String(v);
+    valueNum.textContent = String(v);
     savedMargin = String(v);
     localStorage.setItem("reframe.margin", savedMargin);
     updatePresetHighlight();
@@ -316,6 +319,25 @@ marginInput.addEventListener("input", () => {
 });
 marginInput.addEventListener("change", () => setMargin(getMargin()));
 
+/* Click the value display → swap in the real input for typing.
+   (UXP can't center text inside <input>, so the resting state is a DIV.) */
+function enterEdit() {
+    if (currentSide === "center") return;
+    stepperEl.classList.add("editing");
+    marginInput.value = savedMargin;
+    marginInput.focus();
+    if (marginInput.select) marginInput.select();
+}
+
+function exitEdit() {
+    if (!stepperEl.classList.contains("editing")) return;
+    stepperEl.classList.remove("editing");
+    setMargin(getMargin());
+}
+
+valueBox.addEventListener("click", enterEdit);
+marginInput.addEventListener("blur", exitEdit);
+
 applyBtn.addEventListener("click", performReframe);
 
 // Keyboard: arrows = side, C = center, Enter = apply
@@ -328,12 +350,13 @@ document.addEventListener("keydown", (e) => {
         case "ArrowRight": selectSide("right");  e.preventDefault(); break;
         case "c":
         case "C":          selectSide("center"); break;
-        case "Enter":      performReframe();     break;
+        case "Enter":      exitEdit(); performReframe(); break;
     }
 });
 
 /* ---------------- init ---------------- */
 
 marginInput.value = savedMargin;
+valueNum.textContent = savedMargin;
 selectSide(SIDES.includes(currentSide) ? currentSide : "top");
 setStatus("Ready");
