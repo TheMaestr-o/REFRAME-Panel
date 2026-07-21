@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <div class="panel">
+
+        <div class="brand">
+            <span class="brand-name">REFRAME</span>
+            <span class="brand-ver">v2.0 · Maestro</span>
+        </div>
+
+        <!-- Directional pad: which side gets the margin -->
+        <div class="section-label">Seite / Side</div>
+        <div class="dpad">
+            <div class="dpad-cell"></div>
+            <button class="dpad-btn" id="side-top"    data-side="top"    title="Abstand oben">▲</button>
+            <div class="dpad-cell"></div>
+
+            <button class="dpad-btn" id="side-left"   data-side="left"   title="Abstand links">◀</button>
+            <button class="dpad-btn dpad-center" id="side-center" data-side="center" title="Zentrieren">◎</button>
+            <button class="dpad-btn" id="side-right"  data-side="right"  title="Abstand rechts">▶</button>
+
+            <div class="dpad-cell"></div>
+            <button class="dpad-btn" id="side-bottom" data-side="bottom" title="Abstand unten">▼</button>
+            <div class="dpad-cell"></div>
+        </div>
+
+        <!-- Margin input -->
+        <div class="section-label" id="margin-label">Abstand (px)</div>
+        <div class="stepper" id="stepper">
+            <button class="step-btn" id="step-minus">−</button>
+            <input class="margin-input" id="margin" type="text" inputmode="numeric" value="50" spellcheck="false" />
+            <button class="step-btn" id="step-plus">+</button>
+        </div>
+
+        <div class="presets" id="presets">
+            <button class="preset-btn" data-val="30">30</button>
+            <button class="preset-btn" data-val="50">50</button>
+            <button class="preset-btn" data-val="60">60</button>
+            <button class="preset-btn" data-val="100">100</button>
+        </div>
+
+        <button class="apply-btn" id="apply">Anwenden</button>
+
+        <div class="status" id="status">Bereit · Path 1 wird gesucht</div>
+
+    </div>
+    <script src="index.js"></script>
+</body>
+</html>
