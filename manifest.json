@@ -19,20 +19,20 @@
                 "default": "REFRAME"
             },
             "minimumSize": {
-                "width": 180,
-                "height": 286
+                "width": 190,
+                "height": 352
             },
             "maximumSize": {
                 "width": 480,
                 "height": 1200
             },
             "preferredDockedSize": {
-                "width": 220,
-                "height": 330
+                "width": 230,
+                "height": 390
             },
             "preferredFloatingSize": {
-                "width": 220,
-                "height": 330
+                "width": 230,
+                "height": 390
             },
             "icons": [
                 {

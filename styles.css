@@ -116,8 +116,8 @@ body {
 
 .dpad-btn {
     width: 46px;
-    height: 32px;
-    margin: 2px;
+    height: 46px;
+    margin: 3px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -128,6 +128,8 @@ body {
     font-size: 13px;
     cursor: pointer;
 }
+
+.dpad-btn { font-size: 14px; }
 
 .dpad-btn:hover {
     color: var(--text);
@@ -159,7 +161,7 @@ body {
      swaps in the real <input> for typing (.editing state)               */
 
 .stepper {
-    width: 146px; /* = d-pad visual width: 46+4+46+4+46 */
+    width: 156px; /* = d-pad visual width: 3x46 + 6px gaps + 3px edges */
     margin: 0 auto 6px;
     display: flex;
     align-items: center;
@@ -171,7 +173,7 @@ body {
 
 .step-btn {
     width: 46px; /* same column as the d-pad arrows */
-    height: 28px;
+    height: 46px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -191,8 +193,8 @@ body {
 .value-box {
     flex-grow: 1;
     flex-shrink: 1;
-    height: 28px;
-    margin: 0 4px; /* field lands exactly on the center d-pad column */
+    height: 46px;
+    margin: 0 6px; /* field lands exactly on the center d-pad column */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -221,10 +223,10 @@ body {
     flex-shrink: 1;
     width: 60px;
     min-width: 0;
-    height: 28px;
-    min-height: 28px;
-    max-height: 28px;
-    margin: 0 4px;
+    height: 46px;
+    min-height: 46px;
+    max-height: 46px;
+    margin: 0 6px;
     padding: 0 4px;
     background-color: var(--bg-input);
     border: 1px solid var(--accent);
@@ -247,20 +249,10 @@ body {
    here). Load: click. Delete / reorder: right-click menu or drag.        */
 
 .presets {
-    width: 146px; /* same 3x46 grid as the d-pad and the stepper */
+    width: 156px; /* same 3x46 grid as the d-pad and the stepper */
     margin: 0 auto 6px;
     display: flex;
     justify-content: center;
-}
-
-/* 3 visible slots: 46px chips + space-between over 146px = two 4px gaps,
-   flush with the d-pad and stepper columns */
-.presets.grid3 {
-    justify-content: space-between;
-}
-
-.presets.grid3 .preset-slot {
-    margin: 0;
 }
 
 /* zero presets + not dragging -> the row does not exist */
@@ -271,7 +263,7 @@ body {
 .preset-slot {
     width: 46px;
     height: 26px;
-    margin: 0 2px;
+    margin: 0 3px;
     display: flex;
     align-items: center;
     justify-content: center;
