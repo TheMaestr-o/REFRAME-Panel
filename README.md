@@ -47,6 +47,13 @@ Repositions the canvas around **"Path 1"** with a single click. The canvas size 
 
 **Keyboard flow:** arrows pick the side → `Tab` lands in the field → type → `Enter` focuses APPLY → `Enter` applies. `C` = Center, `Esc` cancels an edit.
 
+## Use cases
+
+- **Product photography:** identical margins around every subject across hundreds of shots — pick a side, set the distance, APPLY
+- **Print & dental design:** reposition the artwork on a fixed-size canvas without ever losing pixels outside the frame
+- **Batch-friendly:** the crop is one History step and never changes the document size, so Actions built on top stay predictable
+- Works where CEP panels no longer load — Photoshop 2025 and 2026 (UXP, manifest v5, apiVersion 2)
+
 ## Install
 
 **The easy way** — grab `com.maestro.reframe_x.y.z.ccx` from [**Releases**](../../releases), double-click it, Creative Cloud does the rest. The panel appears under **Plugins → REFRAME by Maestro → REFRAME**.
