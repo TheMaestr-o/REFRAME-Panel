@@ -25,6 +25,14 @@
      reorder or delete; persisted in localStorage
    - Tab ring: value field → presets → APPLY; Enter in the field jumps
      focus to APPLY so the next Enter applies
+   New in 2.3.x/2.4.0:
+   - dual engine: generated ExtendScript (the proven original) via
+     AdobeScriptAutomation, native batchPlay as automatic fallback
+   - fixed-size panel (min=max) — no host resize grabber artifacts
+   - stationary layout: Center mode reserves space, nothing teleports
+   - offscreen input with centered live echo + caret (UXP inputs are
+     C++ widgets — text-align is impossible on the real control)
+   - margin clamped 0..99999 on every path; silence on success
    New in 2.2.0:
    - APPLY label centered (the div conversion had lost the free centering)
    - presets are unique (dedupe on save/drop + self-heal stored state)
