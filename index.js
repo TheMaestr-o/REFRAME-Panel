@@ -593,8 +593,8 @@ $("step-plus").addEventListener("click", () => {
 });
 
 marginInput.addEventListener("input", () => {
-    // digits only, max 4; the centered display echoes every keystroke
-    const clean = marginInput.value.replace(/[^0-9]/g, "").slice(0, 4);
+    // digits only, max 5 (99999 px); the display echoes every keystroke
+    const clean = marginInput.value.replace(/[^0-9]/g, "").slice(0, 5);
     if (clean !== marginInput.value) marginInput.value = clean;
     valueNum.textContent = clean;
     updatePresetHighlight();
