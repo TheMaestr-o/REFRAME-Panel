@@ -1,8 +1,8 @@
 {
     "manifestVersion": 5,
-    "id": "com.maestro.reframe",
+    "id": "3e3f92ab",
     "name": "REFRAME by Maestro",
-    "version": "2.4.0",
+    "version": "2.4.1",
     "main": "index.html",
     "host": {
         "app": "PS",
