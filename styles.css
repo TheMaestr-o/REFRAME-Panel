@@ -21,8 +21,10 @@
     --line:        #3d3d3d;
     --text:        #d6d6d6;
     --text-dim:    #8a8a8a;
-    --accent:      #f5b942;
-    --accent-text: #1a1a1a;
+    --accent:        #f5b942;
+    --accent-hover:  #ffcb5c;
+    --accent-active: #d9a232;
+    --accent-text:   #1a1a1a;
 }
 
 * {
@@ -31,9 +33,10 @@
     padding: 0;
 }
 
-html {
+html,
+:root {
     height: 100%;
-    overflow: hidden;
+    overflow: hidden !important;
     background-color: var(--bg);
 }
 
@@ -53,7 +56,7 @@ html {
 body {
     position: relative;
     height: 100%;
-    overflow: hidden;
+    overflow: hidden !important;
     background-color: var(--bg);
     color: var(--text);
     font-family: "Adobe Clean", "SF Pro Text", "Segoe UI", sans-serif;
@@ -70,6 +73,24 @@ body {
     padding: 10px 10px 14px;
     display: flex;
     flex-direction: column;
+}
+
+/* ---- Accent switcher (tiny dot, top-right) ------------------------------ */
+
+.theme-dot {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: var(--accent);
+    opacity: 0.65;
+    cursor: pointer;
+}
+
+.theme-dot:hover {
+    opacity: 1;
 }
 
 /* ---- Header: authorship only, no divider ------------------------------- */
@@ -147,11 +168,17 @@ body {
     font-size: 16px;
 }
 
-/* Center mode: the margin block does not exist */
+/* Center mode: the margin block does not exist; the d-pad re-centers
+   itself in the freed space so nothing reads as a hole */
 .panel.center-mode .section-label,
 .panel.center-mode .stepper,
 .panel.center-mode .presets {
     display: none;
+}
+
+.panel.center-mode .dpad {
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 /* ---- Margin stepper ----------------------------------------------------
@@ -374,11 +401,11 @@ body {
 }
 
 .apply-btn:hover {
-    background-color: #ffcb5c;
+    background-color: var(--accent-hover);
 }
 
 .apply-btn:active {
-    background-color: #d9a232;
+    background-color: var(--accent-active);
 }
 
 .apply-btn.busy {
