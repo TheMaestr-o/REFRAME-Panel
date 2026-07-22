@@ -265,7 +265,7 @@ async function selectionFromPath(path) {
     // Same call the working REFRAME.jsx makes: makeSelection(0.5, true)
     try {
         if (typeof path.makeSelection === "function") {
-            await path.makeSelection(0.5, true, constants.SelectionType.REPLACE);
+            await path.makeSelection(0, true, constants.SelectionType.REPLACE);
             console.log("REFRAME: selection via DOM makeSelection");
             return;
         }
@@ -280,7 +280,7 @@ async function selectionFromPath(path) {
                 to: [{ _ref: "path", _id: path.id }],
                 version: 1,
                 antiAlias: true,
-                feather: px(0.5)
+                feather: px(0)
             }
         ],
         {}
@@ -399,7 +399,7 @@ function buildEngineJSX(side, margin) {
         '    var side = ' + JSON.stringify(side) + ';',
         '    var margin = ' + margin + ';',
         '    var dW = doc.width.value, dH = doc.height.value;',
-        '    p.makeSelection(0.5, true, SelectionType.REPLACE);',
+        '    p.makeSelection(0, true, SelectionType.REPLACE);',
         '    var b = doc.selection.bounds;',
         '    doc.selection.deselect();',
         '    var pL = b[0].value, pT = b[1].value, pR = b[2].value, pB = b[3].value;',
@@ -568,10 +568,10 @@ $("step-plus").addEventListener("click", () => {
 });
 
 marginInput.addEventListener("input", () => {
-    // digits only; the centered display echoes every keystroke
-    const clean = marginInput.value.replace(/[^0-9]/g, "");
+    // digits only, max 4; the centered display echoes every keystroke
+    const clean = marginInput.value.replace(/[^0-9]/g, "").slice(0, 4);
     if (clean !== marginInput.value) marginInput.value = clean;
-    valueNum.textContent = clean === "" ? "·" : clean;
+    valueNum.textContent = clean;
     updatePresetHighlight();
 });
 marginInput.addEventListener("change", () => setMargin(getMargin()));

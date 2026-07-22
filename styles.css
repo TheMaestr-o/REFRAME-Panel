@@ -193,6 +193,8 @@ body {
 .value-box {
     flex-grow: 1;
     flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
     height: 46px;
     margin: 0 6px; /* field lands exactly on the center d-pad column */
     display: flex;
@@ -231,6 +233,23 @@ body {
 
 .stepper.editing .value-num {
     color: var(--accent);
+}
+
+.value-caret {
+    display: none;
+    width: 1px;
+    height: 18px;
+    margin-left: 1px;
+    background-color: var(--accent);
+}
+
+.stepper.editing .value-caret {
+    display: inline-block;
+    animation: rf-blink 1s steps(2, start) infinite;
+}
+
+@keyframes rf-blink {
+    50% { opacity: 0; }
 }
 
 /* ---- Preset slots -------------------------------------------------------
