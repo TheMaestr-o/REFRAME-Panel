@@ -218,30 +218,19 @@ body {
 }
 
 .margin-input {
-    display: none;
-    flex-grow: 1;
-    flex-shrink: 1;
+    position: absolute;
+    left: -10000px;
+    top: 0;
     width: 60px;
-    min-width: 0;
-    height: 46px;
-    min-height: 46px;
-    max-height: 46px;
-    margin: 0 6px;
-    padding: 0 4px;
-    background-color: var(--bg-input);
-    border: 1px solid var(--accent);
-    border-radius: 4px;
-    color: var(--text);
-    font-size: 15px;
-    font-weight: 600;
+    height: 24px;
 }
 
 .stepper.editing .value-box {
-    display: none;
+    border-color: var(--accent);
 }
 
-.stepper.editing .margin-input {
-    display: block;
+.stepper.editing .value-num {
+    color: var(--accent);
 }
 
 /* ---- Preset slots -------------------------------------------------------
