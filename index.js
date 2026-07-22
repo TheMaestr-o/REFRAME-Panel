@@ -1,5 +1,5 @@
 /* ==========================================================================
-   REFRAME v2.2.6  (UXP Panel)
+   REFRAME v2.2.7  (UXP Panel)
    AUTHOR: Sergio (Maestro)
    © 2026 Sergio (Maestro). All rights reserved. See LICENSE.
    No copying, redistribution or derivative works without written permission.
@@ -37,7 +37,7 @@
    - 3 presets align to an edge-to-edge grid; compact vertical metrics
    ========================================================================== */
 
-const { app, core, action } = require("photoshop");
+const { app, core, action, constants } = require("photoshop");
 const batchPlay = action.batchPlay;
 
 /* ---------------- state ---------------- */
@@ -246,6 +246,24 @@ function px(v) {
     return { _unit: "pixelsUnit", _value: v };
 }
 
+/* The original REFRAME.jsx forces ruler units to PIXELS for the whole
+   operation and restores them afterwards — print documents (mm/cm rulers)
+   would otherwise feed non-pixel numbers into the crop. Same here. */
+function forcePixelRulers() {
+    try {
+        const ur = app.preferences.unitsAndRulers;
+        const prev = ur.rulerUnits;
+        ur.rulerUnits = constants.RulerUnits.PIXELS;
+        return () => { try { ur.rulerUnits = prev; } catch (e) {} };
+    } catch (e) {}
+    try {
+        const prev = app.preferences.rulerUnits;
+        app.preferences.rulerUnits = constants.RulerUnits.PIXELS;
+        return () => { try { app.preferences.rulerUnits = prev; } catch (e) {} };
+    } catch (e) {}
+    return () => {};
+}
+
 async function selectionFromPath(pathId) {
     await batchPlay(
         [
@@ -255,7 +273,7 @@ async function selectionFromPath(pathId) {
                 to: [{ _ref: "path", _id: pathId }],
                 version: 1,
                 antiAlias: true,
-                feather: px(0)
+                feather: px(0.5)
             }
         ],
         {}
@@ -380,10 +398,11 @@ async function performReframe() {
                     documentID: doc.id,
                     name: "REFRAME"
                 });
+                const restoreUnits = forcePixelRulers();
                 try {
                     // Canvas size — stays exactly the same after crop
-                    const W = doc.width;
-                    const H = doc.height;
+                    const W = Number(doc.width);
+                    const H = Number(doc.height);
 
                     await unlockBackground(doc);
 
@@ -423,6 +442,7 @@ async function performReframe() {
 
                     await cropTo(cL, cT, cL + W, cT + H);
                 } finally {
+                    restoreUnits();
                     await ctx.hostControl.resumeHistory(hist);
                 }
             },
