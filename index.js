@@ -185,14 +185,11 @@ function savePreset(value) {
     if (presets.length >= MAX_PRESETS) return;
     presets.push(value);
     persistPresets();
-    setStatus("Preset " + value + " px saved", "ok");
 }
 
 function deletePreset(i) {
-    const val = presets[i];
     presets.splice(i, 1);
     persistPresets();
-    setStatus("Preset " + val + " px deleted");
 }
 
 function movePreset(i, dir) {
@@ -435,8 +432,8 @@ async function runViaScript(side, margin) {
     const folder = await uxpFs.getDataFolder();
     const file = await folder.createFile("reframe-run.jsx", { overwrite: true });
     await file.write(buildEngineJSX(side, margin));
-    const jsxPath = file.nativePath;
-    console.log("REFRAME: engine jsx at " + jsxPath);
+    const jsxPath = uxpFs.createSessionToken(file);
+    console.log("REFRAME: engine jsx token for " + file.nativePath);
     await core.executeAsModal(
         async () => {
             await batchPlay(
@@ -534,7 +531,7 @@ async function performReframe() {
 
     busy = true;
     applyBtn.classList.add("busy");
-    setStatus("Applying…", null, true);
+    setStatus("");
 
     try {
         try {
@@ -547,13 +544,6 @@ async function performReframe() {
 
         // persist margin only for side modes (Center never touches it)
         if (side !== "center") setMargin(margin);
-
-        setStatus(
-            side === "center"
-                ? "Centered ✓"
-                : "Done ✓ · " + margin + " px " + side,
-            "ok"
-        );
     } catch (e) {
         console.log("REFRAME: FAILED: " + (e.message || e) +
             (e.stack ? " | " + e.stack : ""));
@@ -706,7 +696,6 @@ slots.forEach((el, i) => {
             } else if (presets[i] !== undefined) {
                 presets[i] = v;          // overwrite this slot
                 persistPresets();
-                setStatus("Preset " + v + " px saved", "ok");
             } else {
                 savePreset(v);           // fill the first free slot
             }
