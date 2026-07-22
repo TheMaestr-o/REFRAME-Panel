@@ -75,36 +75,6 @@ body {
     flex-direction: column;
 }
 
-/* ---- Accent switcher (tiny dot, top-right) ------------------------------ */
-
-.theme-dot {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background-color: var(--accent);
-    opacity: 0.65;
-    cursor: pointer;
-}
-
-.theme-dot:hover {
-    opacity: 1;
-}
-
-/* ---- Header: authorship only, no divider ------------------------------- */
-
-.signature {
-    font-family: "Adobe Clean", "SF Pro Text", "Segoe UI", sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    color: var(--accent);
-    text-align: center;
-    margin-bottom: 8px;
-}
-
 /* ---- Focus ring for div-buttons (divs have no native ring) ------------- */
 
 [role="button"]:focus-visible {
@@ -168,17 +138,12 @@ body {
     font-size: 16px;
 }
 
-/* Center mode: the margin block does not exist; the d-pad re-centers
-   itself in the freed space so nothing reads as a hole */
+/* Center mode: the margin block goes quiet but KEEPS its space —
+   controls never move when the state changes (no teleporting) */
 .panel.center-mode .section-label,
 .panel.center-mode .stepper,
 .panel.center-mode .presets {
-    display: none;
-}
-
-.panel.center-mode .dpad {
-    margin-top: auto;
-    margin-bottom: auto;
+    visibility: hidden;
 }
 
 /* ---- Margin stepper ----------------------------------------------------
@@ -223,6 +188,7 @@ body {
     min-width: 0;
     overflow: hidden;
     height: 46px;
+    padding: 0 8px;
     margin: 0 6px; /* field lands exactly on the center d-pad column */
     display: flex;
     align-items: center;
@@ -244,6 +210,16 @@ body {
     color: var(--text-dim);
     margin-left: 4px;
     margin-top: 3px;
+}
+
+/* 5-digit values: smaller type, no unit — the number keeps breathing */
+.value-box.long .value-num {
+    font-size: 13px;
+    letter-spacing: 0;
+}
+
+.value-box.long .value-unit {
+    display: none;
 }
 
 .margin-input {

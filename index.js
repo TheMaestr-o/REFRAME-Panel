@@ -64,31 +64,6 @@ const presetsEl = $("presets");
 const slots = Array.prototype.slice.call(
     document.querySelectorAll(".preset-slot")
 );
-const themeDot = $("theme-dot");
-
-/* ---------------- accent schemes (dot in the corner cycles them) -------- */
-
-const ACCENTS = [
-    { accent: "#f5b942", hover: "#ffcb5c", active: "#d9a232" }, // amber
-    { accent: "#b8b8b8", hover: "#d0d0d0", active: "#9a9a9a" }, // calm grey
-    { accent: "#7ab3e0", hover: "#93c4ea", active: "#5f9bcb" }, // ocean
-    { accent: "#9cbf8a", hover: "#b0cf9f", active: "#84a973" }  // sage
-];
-let accentIdx = parseInt(localStorage.getItem("reframe.accent"), 10) || 0;
-
-function applyAccent() {
-    const a = ACCENTS[accentIdx % ACCENTS.length];
-    const r = document.documentElement.style;
-    r.setProperty("--accent", a.accent);
-    r.setProperty("--accent-hover", a.hover);
-    r.setProperty("--accent-active", a.active);
-    localStorage.setItem("reframe.accent", String(accentIdx % ACCENTS.length));
-}
-
-themeDot.addEventListener("click", () => {
-    accentIdx = (accentIdx + 1) % ACCENTS.length;
-    applyAccent();
-});
 
 /* ---------------- ui helpers ---------------- */
 
@@ -134,9 +109,13 @@ function getMargin() {
     return isNaN(v) || v < 0 ? 0 : v;
 }
 
+const MARGIN_MAX = 99999;
+
 function setMargin(v) {
+    v = Math.max(0, Math.min(MARGIN_MAX, v));
     marginInput.value = String(v);
     valueNum.textContent = String(v);
+    valueBox.classList.toggle("long", String(v).length >= 5);
     savedMargin = String(v);
     localStorage.setItem("reframe.margin", savedMargin);
     updatePresetHighlight();
@@ -597,6 +576,7 @@ marginInput.addEventListener("input", () => {
     const clean = marginInput.value.replace(/[^0-9]/g, "").slice(0, 5);
     if (clean !== marginInput.value) marginInput.value = clean;
     valueNum.textContent = clean;
+    valueBox.classList.toggle("long", clean.length >= 5);
     updatePresetHighlight();
 });
 marginInput.addEventListener("change", () => setMargin(getMargin()));
@@ -777,7 +757,6 @@ document.addEventListener("keydown", (e) => {
 
 /* ---------------- init ---------------- */
 
-applyAccent();
 marginInput.value = savedMargin;
 valueNum.textContent = savedMargin;
 renderPresets();
