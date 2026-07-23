@@ -54,11 +54,13 @@ Repositions the canvas around **"Path 1"** with a single click. The canvas size 
 - **Batch-friendly:** the crop is one History step and never changes the document size, so Actions built on top stay predictable
 - Works where CEP panels no longer load — Photoshop 2025 and 2026 (UXP, manifest v5, apiVersion 2)
 
-## Install
+## Install — free
 
-**The easy way** — grab `com.maestro.reframe_x.y.z.ccx` from [**Releases**](../../releases), double-click it, Creative Cloud does the rest. The panel appears under **Plugins → REFRAME by Maestro → REFRAME**.
+**The easy way** — grab the latest `.ccx` from [**Releases**](../../releases), double-click it, Creative Cloud does the rest. The panel appears under **Plugins → REFRAME by Maestro → REFRAME**.
 
 Developer options (UXP Developer Tool / system plugins folder) — see [INSTALL.md](INSTALL.md).
+
+> **Free to download and use.** This panel is a work in progress — feedback and bug reports are very welcome.
 
 ## Engineering notes
 
@@ -67,8 +69,14 @@ Developer options (UXP Developer Tool / system plugins folder) — see [INSTALL.
 - **UXP inputs are native C++ widgets** — `text-align` is impossible on the real control. The visible value is a styled display; an offscreen input captures keystrokes and echoes them centered, with a blinking caret.
 - **Fixed-size panel** (`minimumSize == maximumSize`) — no host resize grabber, no scrollbar artifacts, constant geometry in every mode.
 
+## Support & Contact
+
+For questions, feedback, or collaboration:
+
+[![Email](https://img.shields.io/badge/Email-gssdarm%40gmail.com-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:gssdarm@gmail.com)
+[![Telegram](https://img.shields.io/badge/Telegram-%40ohnedan-0088cc?style=flat-square&logo=telegram&logoColor=white)](https://t.me/ohnedan)
+[![GitHub](https://img.shields.io/badge/GitHub-TheMaestr--o-black?style=flat-square&logo=github&logoColor=white)](https://github.com/TheMaestr-o)
+
 ## License
 
-**© 2026 Sergio (Maestro). All rights reserved.**
-
-The source is published for review; copying, redistribution or commercial use requires the author's written permission — see [LICENSE](LICENSE).
+Free to download and use. **© 2026 Sergio (Maestro).** See [LICENSE](LICENSE).
